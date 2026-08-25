@@ -1,3 +1,4 @@
 panel8-backup.tar.gz
 vendor/
 .env
+application/config/database.php
