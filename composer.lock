@@ -1,0 +1,56 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "910e0958e326b467ad49ceaeeff956cb",
+    "packages": [
+        {
+            "name": "pocketarc/codeigniter",
+            "version": "3.4.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pocketarc/codeigniter.git",
+                "reference": "fb57d3519fa929a35e78e279c3dcdd5cc47b2456"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pocketarc/codeigniter/zipball/fb57d3519fa929a35e78e279c3dcdd5cc47b2456",
+                "reference": "fb57d3519fa929a35e78e279c3dcdd5cc47b2456",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.8"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "1.6.*",
+                "phpunit/phpunit": "4.* || 5.* || 8.* || 9.*"
+            },
+            "suggest": {
+                "paragonie/random_compat": "Provides better randomness in PHP 5.x"
+            },
+            "type": "project",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Actively maintained CodeIgniter 3 fork with support for PHP 5.4 - PHP 8.5 (and beyond). Fully backward compatible.",
+            "homepage": "https://github.com/pocketarc/codeigniter",
+            "support": {
+                "issues": "https://github.com/pocketarc/codeigniter/issues",
+                "source": "https://github.com/pocketarc/codeigniter"
+            },
+            "time": "2026-07-18T22:23:24+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {},
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {},
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
+}

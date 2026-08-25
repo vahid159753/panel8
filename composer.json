@@ -1,0 +1,5 @@
+{
+    "require": {
+        "pocketarc/codeigniter": "^3.3"
+    }
+}
