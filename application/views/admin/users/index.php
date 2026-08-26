@@ -64,7 +64,34 @@
 <div class="container">
 
     <h1>VLESS Users</h1>
+    <?php if (!empty($success)): ?>
 
+        <div style="
+        background:#d1e7dd;
+        color:#0f5132;
+        padding:12px;
+        margin-bottom:20px;
+        border-radius:5px;
+    ">
+            <?= html_escape($success) ?>
+        </div>
+
+    <?php endif; ?>
+
+
+    <?php if (!empty($error)): ?>
+
+        <div style="
+        background:#f8d7da;
+        color:#842029;
+        padding:12px;
+        margin-bottom:20px;
+        border-radius:5px;
+    ">
+            <?= html_escape($error) ?>
+        </div>
+
+    <?php endif; ?>
     <p>
         <a href="<?= site_url('admin/users/create') ?>">
             + Add User
@@ -149,10 +176,47 @@
 
                     <td>
 
-                        <a href="#">
+                        <a href="<?= site_url(
+                            'admin/users/edit/' . $user->id
+                        ) ?>">
                             Edit
                         </a>
 
+                        |
+
+                        <?php if ($user->status === 'active'): ?>
+
+                            <a
+                                    href="<?= site_url(
+                                        'admin/users/toggle/' . $user->id
+                                    ) ?>"
+                                    onclick="return confirm(
+                'Disable this user?'
+            );"
+                            >
+                                Disable
+                            </a>
+
+                        <?php elseif ($user->status === 'disabled'): ?>
+
+                            <a
+                                    href="<?= site_url(
+                                        'admin/users/toggle/' . $user->id
+                                    ) ?>"
+                                    onclick="return confirm(
+                'Enable this user?'
+            );"
+                            >
+                                Enable
+                            </a>
+
+                        <?php else: ?>
+
+                            <span>
+            Expired
+        </span>
+
+                        <?php endif; ?>
                     </td>
 
                 </tr>

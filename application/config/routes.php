@@ -54,3 +54,6 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 $route['admin/servers'] = 'admin/servers/index';
 $route['admin/users'] = 'admin/users/index';
+$route['admin/users/create'] = 'admin/users/create';
+$route['admin/users/edit/(:num)'] = 'admin/users/edit/$1';
+$route['admin/users/toggle/(:num)'] = 'admin/users/toggle/$1';
