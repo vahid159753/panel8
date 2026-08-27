@@ -4,6 +4,9 @@
     <include_path>
       <path value="$PROJECT_DIR$/vendor/composer" />
       <path value="$PROJECT_DIR$/vendor/pocketarc/codeigniter" />
+      <path value="$PROJECT_DIR$/vendor/evilfreelancer/routeros-api-php" />
+      <path value="$PROJECT_DIR$/vendor/symfony/process" />
+      <path value="$PROJECT_DIR$/vendor/spatie/ssh" />
     </include_path>
   </component>
 </project>

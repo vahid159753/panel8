@@ -1,5 +1,6 @@
 {
     "require": {
-        "pocketarc/codeigniter": "^3.3"
+        "pocketarc/codeigniter": "^3.3",
+        "evilfreelancer/routeros-api-php": "^1.7"
     }
 }

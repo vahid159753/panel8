@@ -59,7 +59,7 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
 $autoload['libraries'] = array();
-
+$config['composer_autoload'] = FCPATH . 'vendor/autoload.php';
 /*
 | -------------------------------------------------------------------
 |  Auto-load Drivers
