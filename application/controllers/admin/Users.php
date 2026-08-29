@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+require_once FCPATH . 'vendor/autoload.php';
 class Users extends CI_Controller
 {
     public function __construct()
@@ -10,6 +10,7 @@ class Users extends CI_Controller
         $this->load->library('session');
         $this->load->database();
         $this->load->model('Vless_users_model');
+        $this->load->library('Xray_manager');
     }
 
     public function index()
@@ -177,6 +178,28 @@ class Users extends CI_Controller
             $this->load->view('admin/users/create', $data);
             return;
         }
+
+        try {
+
+            $this->xray_manager->sync($server_id);
+
+        } catch (Exception $e) {
+
+            // Keep the database user, but report the Xray sync problem.
+            $this->session->set_flashdata(
+                'error',
+                'User was created, but Xray synchronization failed: '
+                . $e->getMessage()
+            );
+
+            redirect('admin/users');
+            return;
+        }
+
+        $this->session->set_flashdata(
+            'success',
+            'User created and Xray configuration synchronized.'
+        );
 
         redirect('admin/users');
     }
