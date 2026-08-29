@@ -35,10 +35,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | variable so that it is blank.
 |
 */
-$config['index_page'] = 'index.php';
-$root  = "http://".$_SERVER['HTTP_HOST'];
-$root .= str_replace(basename($_SERVER['SCRIPT_NAME']),"",$_SERVER['SCRIPT_NAME']);
-$config['base_url']    = $root;
+//$config['index_page'] = 'index.php';
+//$root  = "http://".$_SERVER['HTTP_HOST'];
+//$root .= str_replace(basename($_SERVER['SCRIPT_NAME']),"",$_SERVER['SCRIPT_NAME']);
+//$config['base_url']    = $root;
+$config['base_url'] = 'http://localhost/panel8/';
 /*
 |--------------------------------------------------------------------------
 | URI PROTOCOL
@@ -215,7 +216,7 @@ $config['directory_trigger'] = 'd';
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 0;
+$config['log_threshold'] = 1;
 
 /*
 |--------------------------------------------------------------------------
@@ -226,7 +227,7 @@ $config['log_threshold'] = 0;
 | application/logs/ directory. Use a full server path.
 |
 */
-$config['log_path'] = '';
+$config['log_path'] = APPPATH . 'logs/';
 
 /*
 |--------------------------------------------------------------------------

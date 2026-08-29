@@ -48,4 +48,18 @@ class Vless_users_model extends CI_Model
             ->where('id', $id)
             ->delete($this->table);
     }
+    public function mark_expired()
+    {
+        return $this->db
+            ->where('status', 'active')
+            ->where('expires_at IS NOT NULL', NULL, FALSE)
+            ->where('expires_at <', date('Y-m-d H:i:s'))
+            ->update(
+                $this->table,
+                array(
+                    'status' => 'expired',
+                    'updated_at' => date('Y-m-d H:i:s')
+                )
+            );
+    }
 }

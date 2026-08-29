@@ -40,6 +40,10 @@ class Xray_manager
         $users = $this->CI->db
             ->where('server_id', (int) $server_id)
             ->where('status', 'active')
+            ->group_start()
+            ->where('expires_at IS NULL', NULL, FALSE)
+            ->or_where('expires_at >', date('Y-m-d H:i:s'))
+            ->group_end()
             ->get('vless_users')
             ->result();
 

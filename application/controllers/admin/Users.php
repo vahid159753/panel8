@@ -504,4 +504,66 @@ class Users extends CI_Controller
             str_split(bin2hex($data), 4)
         );
     }
+    public function expire_users()
+    {
+        // Allow only CLI execution
+        if (!$this->input->is_cli_request()) {
+            show_error('This method can only be run from CLI.', 403);
+            return;
+        }
+
+        $expired_users = $this->db
+            ->select('id, server_id')
+            ->where('status', 'active')
+            ->where('expires_at IS NOT NULL', NULL, FALSE)
+            ->where('expires_at <', date('Y-m-d H:i:s'))
+            ->get('vless_users')
+            ->result();
+
+        if (empty($expired_users)) {
+            echo "No users to expire.\n";
+            return;
+        }
+
+        $server_ids = array();
+
+        foreach ($expired_users as $user) {
+
+            $this->Vless_users_model->update(
+                $user->id,
+                array(
+                    'status' => 'expired',
+                    'updated_at' => date('Y-m-d H:i:s')
+                )
+            );
+
+            $server_ids[$user->server_id] = $user->server_id;
+        }
+
+        foreach ($server_ids as $server_id) {
+
+            try {
+
+                $this->xray_manager->sync($server_id);
+
+                echo "Xray synced for server {$server_id}.\n";
+
+            } catch (Exception $e) {
+
+                echo "Xray sync failed for server {$server_id}: "
+                    . $e->getMessage()
+                    . "\n";
+
+                log_message(
+                    'error',
+                    'Xray expiration sync failed for server '
+                    . $server_id
+                    . ': '
+                    . $e->getMessage()
+                );
+            }
+        }
+
+        echo count($expired_users) . " user(s) expired.\n";
+    }
 }

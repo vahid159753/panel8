@@ -89,5 +89,18 @@ class Xray_test extends CI_Controller
             echo '</pre>';
         }
     }
+    public function sync()
+    {
+        try {
+            $this->load->library('Xray_manager');
 
+            // Change 1 to your actual server_id
+            $this->xray_manager->sync(1);
+
+            echo 'Xray sync completed successfully.';
+
+        } catch (Exception $e) {
+            echo 'ERROR: ' . $e->getMessage();
+        }
+    }
 }
