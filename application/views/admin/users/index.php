@@ -217,6 +217,16 @@
         </span>
 
                         <?php endif; ?>
+                        <a
+                                href="<?= site_url(
+                                    'admin/users/delete/' . $user->id
+                                ) ?>"
+                                onclick="return confirm(
+            'Delete this user permanently?'
+        );"
+                        >
+                            Delete
+                        </a>
                     </td>
 
                 </tr>

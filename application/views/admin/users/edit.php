@@ -124,26 +124,6 @@
 
         </div>
 
-
-        <div class="form-group">
-
-            <label for="email">
-                Email
-            </label>
-
-            <input
-                type="email"
-                name="email"
-                id="email"
-                maxlength="255"
-                value="<?= html_escape(
-                    $form['email']
-                ) ?>"
-            >
-
-        </div>
-
-
         <div class="form-group">
 
             <label for="server_id">

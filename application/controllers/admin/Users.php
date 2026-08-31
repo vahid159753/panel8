@@ -49,7 +49,7 @@ class Users extends CI_Controller
         // Get submitted values
         $username = trim($this->input->post('username', TRUE));
         $server_id = (int) $this->input->post('server_id');
-        $email = trim($this->input->post('email', TRUE));
+        //$email = trim($this->input->post('email', TRUE));
         $traffic_limit_gb = $this->input->post('traffic_limit_gb');
         $duration_days = $this->input->post('duration_days');
 
@@ -57,7 +57,7 @@ class Users extends CI_Controller
         $data['form'] = array(
             'username' => $username,
             'server_id' => $server_id,
-            'email' => $email,
+          //  'email' => $email,
             'traffic_limit_gb' => $traffic_limit_gb,
             'duration_days' => $duration_days
         );
@@ -160,7 +160,7 @@ class Users extends CI_Controller
         $user_data = array(
             'server_id' => $server_id,
             'username' => $username,
-            'email' => $email !== '' ? $email : NULL,
+           // 'email' => $email !== '' ? $email : NULL,
             'uuid' => $uuid,
             'status' => 'active',
             'traffic_limit_bytes' => $traffic_limit_bytes,
@@ -181,7 +181,11 @@ class Users extends CI_Controller
 
         try {
 
-            $this->xray_manager->sync($server_id);
+            $this->xray_manager->add_user(
+                $username,
+                $uuid,
+                0
+            );
 
         } catch (Exception $e) {
 
@@ -228,7 +232,7 @@ class Users extends CI_Controller
 
             $data['form'] = array(
                 'username' => $user->username,
-                'email' => $user->email,
+              //  'email' => $user->email,
                 'server_id' => $user->server_id,
                 'traffic_limit_gb' => $user->traffic_limit_bytes !== null
                     ? $user->traffic_limit_bytes / 1073741824
@@ -257,9 +261,9 @@ class Users extends CI_Controller
             $this->input->post('username', TRUE)
         );
 
-        $email = trim(
-            $this->input->post('email', TRUE)
-        );
+//        $email = trim(
+//            $this->input->post('email', TRUE)
+//        );
 
         $server_id = (int) $this->input->post('server_id');
 
@@ -277,7 +281,7 @@ class Users extends CI_Controller
 
         $data['form'] = array(
             'username' => $username,
-            'email' => $email,
+           // 'email' => $email,
             'server_id' => $server_id,
             'traffic_limit_gb' => $traffic_limit_gb,
             'duration_days' => $duration_days,
@@ -431,7 +435,7 @@ class Users extends CI_Controller
         $update_data = array(
             'server_id' => $server_id,
             'username' => $username,
-            'email' => $email !== '' ? $email : NULL,
+           // 'email' => $email !== '' ? $email : NULL,
             'status' => $status,
             'traffic_limit_bytes' => $traffic_limit_bytes,
             'expires_at' => $expires_at,
@@ -441,6 +445,57 @@ class Users extends CI_Controller
         $this->Vless_users_model->update(
             $id,
             $update_data
+        );
+
+        redirect('admin/users');
+    }
+    public function delete($id)
+    {
+        $id = (int) $id;
+
+        $user = $this->Vless_users_model->get($id);
+
+        if (!$user) {
+            show_404();
+            return;
+        }
+
+        try {
+
+            // Remove user from running Xray first.
+            $this->xray_manager->delete_user(
+                $user->username
+            );
+
+        } catch (Exception $e) {
+
+            $this->session->set_flashdata(
+                'error',
+                'User could not be removed from Xray: '
+                . $e->getMessage()
+            );
+
+            redirect('admin/users');
+            return;
+        }
+
+        // Remove user from database.
+        $deleted = $this->Vless_users_model->delete($id);
+
+        if (!$deleted) {
+
+            $this->session->set_flashdata(
+                'error',
+                'User was removed from Xray, but could not be deleted from the database.'
+            );
+
+            redirect('admin/users');
+            return;
+        }
+
+        $this->session->set_flashdata(
+            'success',
+            'User deleted successfully.'
         );
 
         redirect('admin/users');
@@ -456,13 +511,65 @@ class Users extends CI_Controller
             return;
         }
 
-        // Only active and disabled users can be toggled.
+        /*
+         * Active → Disabled
+         */
         if ($user->status === 'active') {
+
+            try {
+
+                $this->xray_manager->delete_user(
+                    $user->username
+                );
+
+            } catch (Exception $e) {
+
+                $this->session->set_flashdata(
+                    'error',
+                    'User could not be disabled in Xray: '
+                    . $e->getMessage()
+                );
+
+                redirect('admin/users');
+                return;
+            }
+
             $new_status = 'disabled';
-        } elseif ($user->status === 'disabled') {
+        }
+
+        /*
+         * Disabled → Active
+         */
+        elseif ($user->status === 'disabled') {
+
+            try {
+
+                $this->xray_manager->enable_user(
+                    $user->username,
+                    $user->uuid,
+                    0
+                );
+
+            } catch (Exception $e) {
+
+                $this->session->set_flashdata(
+                    'error',
+                    'User could not be enabled in Xray: '
+                    . $e->getMessage()
+                );
+
+                redirect('admin/users');
+                return;
+            }
+
             $new_status = 'active';
-        } else {
-            // Expired users cannot be re-enabled from here.
+        }
+
+        /*
+         * Expired users cannot be toggled.
+         */
+        else {
+
             $this->session->set_flashdata(
                 'error',
                 'An expired user cannot be enabled this way.'
@@ -472,6 +579,9 @@ class Users extends CI_Controller
             return;
         }
 
+        /*
+         * Update database only after Xray operation succeeds.
+         */
         $this->Vless_users_model->update(
             $id,
             array(
@@ -565,5 +675,55 @@ class Users extends CI_Controller
         }
 
         echo count($expired_users) . " user(s) expired.\n";
+    }
+    public function test_go_api()
+    {
+        try {
+            $users = $this->xray_manager->test_go_api();
+
+            header('Content-Type: application/json');
+
+            echo json_encode(
+                $users,
+                JSON_PRETTY_PRINT
+            );
+
+        } catch (Exception $e) {
+
+            show_error(
+                $e->getMessage(),
+                502
+            );
+        }
+    }
+    public function recover($server_id)
+    {
+        $server_id = (int) $server_id;
+
+        if ($server_id <= 0) {
+            show_error('Invalid server ID.', 400);
+            return;
+        }
+
+        try {
+
+            $this->xray_manager->recover($server_id);
+
+        } catch (Exception $e) {
+
+            show_error(
+                'Xray recovery failed: ' . $e->getMessage(),
+                502
+            );
+
+            return;
+        }
+
+        $this->session->set_flashdata(
+            'success',
+            'Xray configuration recovered successfully.'
+        );
+
+        redirect('admin/users');
     }
 }
